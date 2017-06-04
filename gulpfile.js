@@ -7,12 +7,20 @@ var browserify = require('browserify');	// Bundles JS
 var reactify = require('reactify');	//Transforms REact JSX to JS
 var source = require('vinyl-source-stream');	// Use conventional text streams with Gulp
 
+var concat = require('gulp-concat');	// Use conventional text streams with Gulp
+// var source = require('vinyl-source-stream');	// Use conventional text streams with Gulp
+// var source = require('vinyl-source-stream');	// Use conventional text streams with Gulp
+
 var config = {
 	port: 9005,
 	devBaseUrl: 'http://localhost',
 	paths: {
 		html: './src/*.html',
 		js: './src/**/*.js',
+		css: [
+			'node_modules\bootstrap\dist\css\bootstrap-theme.min.css',
+			'node_modules\bootstrap\dist\css\bootstrap-theme.min.css'
+		],
 		dist: './dist',
 		mainJs: './src/main.js'
 	}
@@ -38,6 +46,12 @@ gulp.task('html', function() {
 	gulp.src(config.paths.html) 
 	.pipe(gulp.dest(config.paths.dist))
 	.pipe(connect.reload());
+});
+
+gulp.task('css', function() {
+	gulp.src(config.paths.css) 
+	.pipe(concat('bundle.css'))
+	.pipe(gulp.dest(source.paths.dist + '\css'));
 });
 
 gulp.task('js', function() {
