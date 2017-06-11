@@ -9,6 +9,25 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${file}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Gulp Tasks",
+            "program":  "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+            "stopOnEntry": false,
+            "args":[],
+            "cwd": "${workspaceRoot}/",
+            "runtimeExecutable":null,
+            "env": { }
+        },
+        {
+            "name": "Chrome Attach",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9005,
+            "sourceMaps": true,
+            "webRoot": "${workspaceRoot}"
         }
     ]
 }
