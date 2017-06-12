@@ -49238,6 +49238,23 @@ module.exports = {
 var React = require('react');
 
 var About = React.createClass({displayName: "About",
+    statics: {
+        willTransitionTo: function(transition, params, query, callback){
+            if(!confirm('Are you sure you want to read a page that\'s boring?')){
+                transition.about();
+            }
+            else {
+                callback();
+            }
+        },
+        willTransitionFrom: function(transition, component){
+            if(!confirm('Are you sure you want to leave a page that\'s exiting?')){
+                transition.about();
+            }
+        }
+
+    },
+
     render: function() {
         return (
             React.createElement("div", null, 
@@ -49368,19 +49385,22 @@ module.exports = Authors;
 "use strict";
 
 var React = require('react');
+var Router = require('react-router');
+
+var Link = Router.Link;
 
 var Header = React.createClass({displayName: "Header",
     render: function () {
         return (
             React.createElement("nav", {className: "navbar navbar-default"}, 
                 React.createElement("div", {className: "container-fluid"}, 
-                        React.createElement("a", {href: "/", className: "navbar-brand"}, 
+                        React.createElement(Link, {to: "app", className: "navbar-brand"}, 
                             React.createElement("img", {src: "images/react-logo.png"})
                         ), 
                         React.createElement("ul", {className: "nav navbar-nav"}, 
-                            React.createElement("li", null, React.createElement("a", {href: "/"}, "Home")), 
-                            React.createElement("li", null, React.createElement("a", {href: "/#authors"}, "Authors")), 
-                            React.createElement("li", null, React.createElement("a", {href: "/#about"}, "About"))
+                            React.createElement("li", null, React.createElement(Link, {to: "app"}, "Home")), 
+                            React.createElement("li", null, React.createElement(Link, {to: "authors"}, "Authors")), 
+                            React.createElement("li", null, React.createElement(Link, {to: "about"}, "About"))
                         )
                 )
             )
@@ -49391,17 +49411,20 @@ var Header = React.createClass({displayName: "Header",
 
 module.exports = Header;
 
-},{"react":197}],205:[function(require,module,exports){
+},{"react":197,"react-router":28}],205:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
+var Router = require('react-router');
 
+var Link = Router.Link;
 var Home = React.createClass({displayName: "Home",
     render: function() {
         return (
             React.createElement("div", {className: "jumbotron"}, 
                 React.createElement("h1", null, "The First React Components."), 
-                React.createElement("p", null, "This is a test done to have the React component in the main page")
+                React.createElement("p", null, "This is a test done to have the React component in the main page"), 
+                React.createElement(Link, {to: "about", className: "btn btn-primary btn-lg"}, "Learn more...")
             )
         );
     }
@@ -49409,32 +49432,59 @@ var Home = React.createClass({displayName: "Home",
 
 module.exports = Home;
 
-},{"react":197}],206:[function(require,module,exports){
+},{"react":197,"react-router":28}],206:[function(require,module,exports){
+"use strict";
+
+var React = require('react');
+var Router = require('react-router');
+var Link = Router.Link;
+
+var NotFound = React.createClass({displayName: "NotFound",
+    render: function () {
+        return (
+                React.createElement("div", {className: "container-fluid"}, 
+                        React.createElement("h1", null, "Page Not Found"), 
+                        React.createElement("p", null, "Sorry, seems there is nothing to see..."), 
+                        React.createElement("p", null, React.createElement(Link, {to: "app"}, "Back to Home"))
+                )
+        );
+    }
+});
+
+module.exports = NotFound;
+
+},{"react":197,"react-router":28}],207:[function(require,module,exports){
 "use strict"; 
 
 var React = require("react");
 var Router = require("react-router");
 var routes = require("./route");
 
-Router.run(routes, function(Handler){
+Router.run(routes, Router.HistoryLocation, function(Handler){
     React.render(React.createElement(Handler, null), document.getElementById('app'));
 });
-},{"./route":207,"react":197,"react-router":28}],207:[function(require,module,exports){
+},{"./route":208,"react":197,"react-router":28}],208:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
 var Router = require('react-router');
 var DefaultRoute = Router.DefaultRoute;
+var NotFoundRoute = Router.NotFoundRoute;
 var Route = Router.Route;
+var Redirect = Router.Redirect;
 
 var routes = (
     React.createElement(Route, {name: "app", path: "/", handler: require('./components/app')}, 
         React.createElement(DefaultRoute, {handler: require('./components/homePage')}), 
         React.createElement(Route, {name: "authors", handler: require('./components/authors/authorsPage')}), 
-        React.createElement(Route, {name: "about", handler: require('./components/about/aboutPage')})
+        React.createElement(Route, {name: "about", handler: require('./components/about/aboutPage')}), 
+        React.createElement(NotFoundRoute, {handler: require('./components/notFoundPage')}), 
+        React.createElement(Redirect, {from: "about-us", to: "about"}), 
+        React.createElement(Redirect, {from: "awthors", to: "authors"}), 
+        React.createElement(Redirect, {from: "about/*", to: "about"})
     )
 );
 
 module.exports = routes;
 
-},{"./components/about/aboutPage":200,"./components/app":201,"./components/authors/authorsPage":203,"./components/homePage":205,"react":197,"react-router":28}]},{},[206]);
+},{"./components/about/aboutPage":200,"./components/app":201,"./components/authors/authorsPage":203,"./components/homePage":205,"./components/notFoundPage":206,"react":197,"react-router":28}]},{},[207]);
