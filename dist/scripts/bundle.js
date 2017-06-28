@@ -50835,7 +50835,8 @@ var keyMirror = require('react/lib/keyMirror');
 module.exports = keyMirror({
     INITIALIZE: null,
     CREATE_AUTHOR: null,
-    UPDATE_AUTHOR: null    
+    UPDATE_AUTHOR: null,
+    DELETE_AUTHOR: null    
 });
 
 },{"react/lib/keyMirror":187}],219:[function(require,module,exports){
