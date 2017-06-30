@@ -2,6 +2,7 @@
 
 var React = require('react');
 var Input = require('../common/textInput');
+var Select = require('../common/select');
 
 var CourseForm = React.createClass({
 
@@ -32,6 +33,13 @@ var CourseForm = React.createClass({
                         onChange={this.props.onChange}
                         error= {this.props.errors.watchHref} />
 
+                    <Select
+                        name="author"
+                        label="Author"
+                        value={this.props.author.id}
+                        onChange={this.props.onChangeAuthor}
+                        error= {this.props.errors.author} />
+                    
                     {/*<option value={this.props.author.id} onChange={this.props.onChange} error= {this.props.errors.author}>{this.props.author.name} </option>*/}
 
                     <Input 
