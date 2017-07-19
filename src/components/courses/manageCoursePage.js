@@ -5,6 +5,7 @@ var Router = require('react-router');
 var CourseForm = require('./courseForm');
 var CourseActions = require('../../actions/courseActions');
 var CourseStore = require('../../stores/courseStore');
+var AuthorStore = require('../../stores/authorStore');
 
 var toastr = require('toastr');
 
@@ -25,6 +26,7 @@ var ManageCourses = React.createClass({
     getInitialState: function () {
         return {
             course: { id: "", title: "", watchHref: "", author: { id: "", name: "" }, length: "", category: "" },
+            authors: [],
             errors: {},
             dirty: false
         };
@@ -32,9 +34,10 @@ var ManageCourses = React.createClass({
 
     componentWillMount: function () {
         var courseId = this.props.params.id; // from the path '/course:id'
+        var allAuthors = AuthorStore.getAllAuthors();
 
         if (courseId) {
-            this.setState({ course: CourseStore.getCourseById(courseId) });
+            this.setState({ course: CourseStore.getCourseById(courseId), authors: allAuthors });
         }
     },
 
@@ -44,6 +47,16 @@ var ManageCourses = React.createClass({
         var value = event.target.value;
 
         this.state.course[field] = value;
+        return this.setState({ course: this.state.course });
+    },
+    
+    setAuthorToCourse: function (event) {
+
+        this.setState({ dirty: true });
+        var authorId = event.target.value;
+
+        this.state.course.author = AuthorStore.getAuthorById(authorId);
+        
         return this.setState({ course: this.state.course });
     },
 
@@ -62,10 +75,10 @@ var ManageCourses = React.createClass({
             formIsValid = false;
         }
 
-        // if (this.state.author.id <= 0) {
-        //     this.state.errors.author = 'Must select an author';
-        //     formIsValid = false;
-        // }
+        if (this.state.course.author.id <= 0) {
+            this.state.errors.author = 'Must select an author';
+            formIsValid = false;
+        }
 
         if (this.state.course.length.length < 3) {
             this.state.errors.length = 'Length must be at least 3 characters.';
@@ -103,8 +116,10 @@ var ManageCourses = React.createClass({
     render: function () {
         return (
             <CourseForm
+                authors={this.state.authors}
                 course={this.state.course}
                 onChange={this.setCourseState}
+                onChangeAuthor={this.setAuthorToCourse}
                 onSave={this.saveCourse}
                 errors={this.state.errors} />
         );

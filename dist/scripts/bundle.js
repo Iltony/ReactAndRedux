@@ -50295,7 +50295,9 @@ var CourseApi = require("../api/courseApi");
 var ActionTypes = require("../constants/actionTypes");
 
 var CourseActions = {
+
     createCourse: function(course) {
+
         var newCourse = CourseApi.saveCourse(course);
 
         //Hey dispatcher, go tell all the stores that an course was just created.
@@ -50306,6 +50308,7 @@ var CourseActions = {
     },
 
     updateCourse: function(course) {
+
         var updatedCourse = CourseApi.saveCourse(course);
 
         Dispatcher.dispatch({
@@ -50875,17 +50878,19 @@ var Select = React.createClass({displayName: "Select",
 
     propTypes: {
         authors: React.PropTypes.array.isRequired,
-        onChange: React.PropTypes.func.isRequired,
+        onElementChange: React.PropTypes.func.isRequired,
         errors: React.PropTypes.object
     },
 
     createAuthorOptionItem: function(author){
-        return React.createElement("option", {key:  author.id, value:  author.id}, " ",  author.firstName, " ", author.lastName, " ");
+
+
+        return React.createElement("option", {key:  author.id, value:  author.id}, " ",  author.firstName, " - ", author.lastName, " ");
     },
 
     render: function(){
 
-        var wrapperClass = 'form-group';
+        var wrapperClass = 'form-group  dropdown-menu';
                 
         if(this.props.error && this.props.error.length > 0) {
             wrapperClass += " " + 'has-error';
@@ -50895,9 +50900,9 @@ var Select = React.createClass({displayName: "Select",
             React.createElement("div", {className: wrapperClass}, 
                 React.createElement("label", {htmlFor: this.props.name}, this.props.label), 
                 React.createElement("div", {className: "field"}, 
-                     React.createElement("select", {onChange: this.props.onChange}, 
-                        this.props.authors.map(this.createAuthorOptionItem, this)
-                     ), 
+                        React.createElement("select", {onChange: this.props.onElementChange}, 
+                            this.props.authors.map(this.createAuthorOptionItem, this)
+                        ), 
                     React.createElement("div", {className: "input"}, this.props.error)
                 )
             )
@@ -50963,7 +50968,9 @@ var CourseForm = React.createClass({displayName: "CourseForm",
         course: React.PropTypes.object.isRequired,
         onSave: React.PropTypes.func.isRequired,
         onChange: React.PropTypes.func.isRequired,
-        errors: React.PropTypes.object
+        errors: React.PropTypes.object,
+        authors: React.PropTypes.array.isRequired,
+        onChangeAuthor: React.PropTypes.func.isRequired
     },
 
     render: function () {
@@ -50985,12 +50992,13 @@ var CourseForm = React.createClass({displayName: "CourseForm",
                         value: this.props.course.watchHref, 
                         onChange: this.props.onChange, 
                         error: this.props.errors.watchHref}), 
-
+ 
                     React.createElement(Select, {
                         name: "author", 
                         label: "Author", 
-                        value: this.props.author.id, 
-                        onChange: this.props.onChangeAuthor, 
+                        value: this.props.course.author.id, 
+                        authors: this.props.authors, 
+                        onElementChange: this.props.onChangeAuthor, 
                         error: this.props.errors.author}), 
                     
                     /*<option value={this.props.author.id} onChange={this.props.onChange} error= {this.props.errors.author}>{this.props.author.name} </option>*/
@@ -51046,7 +51054,7 @@ var CourseList = React.createClass({displayName: "CourseList",
                     React.createElement("td", null, " ", React.createElement("a", {ref: "#", onClick: this.deleteCourse.bind(this, course.id)}, "Delete")), 
                     React.createElement("td", null, " ", React.createElement(Link, {to: "manageCourse", params: {id: course.id}}, course.id)), 
                     React.createElement("td", null, " ", React.createElement("a", {href:  course.watchHRef}, " ",  course.title, " ")), 
-                    React.createElement("td", null, " ", React.createElement(Link, {to: "manageAuthor", params: {id: course.author.id}}, course.author.name)), 
+                    React.createElement("td", null, " ", React.createElement(Link, {to: "manageCourse", params: {id: course.author.id}}, course.author.name)), 
                     React.createElement("td", null, " ",  course.length, " "), 
                     React.createElement("td", null, " ",  course.category, " ")
                 )
@@ -51137,6 +51145,7 @@ var Router = require('react-router');
 var CourseForm = require('./courseForm');
 var CourseActions = require('../../actions/courseActions');
 var CourseStore = require('../../stores/courseStore');
+var AuthorStore = require('../../stores/authorStore');
 
 var toastr = require('toastr');
 
@@ -51157,6 +51166,7 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
     getInitialState: function () {
         return {
             course: { id: "", title: "", watchHref: "", author: { id: "", name: "" }, length: "", category: "" },
+            authors: [],
             errors: {},
             dirty: false
         };
@@ -51164,9 +51174,10 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
 
     componentWillMount: function () {
         var courseId = this.props.params.id; // from the path '/course:id'
+        var allAuthors = AuthorStore.getAllAuthors();
 
         if (courseId) {
-            this.setState({ course: CourseStore.getCourseById(courseId) });
+            this.setState({ course: CourseStore.getCourseById(courseId), authors: allAuthors });
         }
     },
 
@@ -51176,6 +51187,16 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
         var value = event.target.value;
 
         this.state.course[field] = value;
+        return this.setState({ course: this.state.course });
+    },
+    
+    setAuthorToCourse: function (event) {
+
+        this.setState({ dirty: true });
+        var authorId = event.target.value;
+
+        this.state.course.author = AuthorStore.getAuthorById(authorId);
+        
         return this.setState({ course: this.state.course });
     },
 
@@ -51194,10 +51215,10 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
             formIsValid = false;
         }
 
-        // if (this.state.author.id <= 0) {
-        //     this.state.errors.author = 'Must select an author';
-        //     formIsValid = false;
-        // }
+        if (this.state.course.author.id <= 0) {
+            this.state.errors.author = 'Must select an author';
+            formIsValid = false;
+        }
 
         if (this.state.course.length.length < 3) {
             this.state.errors.length = 'Length must be at least 3 characters.';
@@ -51235,8 +51256,10 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
     render: function () {
         return (
             React.createElement(CourseForm, {
+                authors: this.state.authors, 
                 course: this.state.course, 
                 onChange: this.setCourseState, 
+                onChangeAuthor: this.setAuthorToCourse, 
                 onSave: this.saveCourse, 
                 errors: this.state.errors})
         );
@@ -51244,7 +51267,7 @@ var ManageCourses = React.createClass({displayName: "ManageCourses",
 });
 
 module.exports = ManageCourses;
-},{"../../actions/courseActions":205,"../../stores/courseStore":231,"./courseForm":220,"react":202,"react-router":33,"toastr":203}],224:[function(require,module,exports){
+},{"../../actions/courseActions":205,"../../stores/authorStore":230,"../../stores/courseStore":231,"./courseForm":220,"react":202,"react-router":33,"toastr":203}],224:[function(require,module,exports){
 "use strict";
 
 var React = require('react');
@@ -51256,7 +51279,7 @@ var Home = React.createClass({displayName: "Home",
     render: function() {
         return (
             React.createElement("div", {className: "jumbotron"}, 
-                React.createElement("h1", null, "The First React Components."), 
+                React.createElement("h1", null, "The React Components, by Cory House."), 
                 React.createElement("p", null, "This is a test done to have the React component in the main page"), 
                 React.createElement(Link, {to: "about", className: "btn btn-primary btn-lg"}, "Learn more...")
             )

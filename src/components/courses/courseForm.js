@@ -10,7 +10,9 @@ var CourseForm = React.createClass({
         course: React.PropTypes.object.isRequired,
         onSave: React.PropTypes.func.isRequired,
         onChange: React.PropTypes.func.isRequired,
-        errors: React.PropTypes.object
+        errors: React.PropTypes.object,
+        authors: React.PropTypes.array.isRequired,
+        onChangeAuthor: React.PropTypes.func.isRequired
     },
 
     render: function () {
@@ -32,13 +34,14 @@ var CourseForm = React.createClass({
                         value={this.props.course.watchHref}
                         onChange={this.props.onChange}
                         error= {this.props.errors.watchHref} />
-
+ 
                     <Select
                         name="author"
                         label="Author"
-                        value={this.props.author.id}
-                        onChange={this.props.onChangeAuthor}
-                        error= {this.props.errors.author} />
+                        value={this.props.course.author.id}
+                        authors={this.props.authors}
+                        onElementChange={this.props.onChangeAuthor}
+                        error= {this.props.errors.author} /> 
                     
                     {/*<option value={this.props.author.id} onChange={this.props.onChange} error= {this.props.errors.author}>{this.props.author.name} </option>*/}
 

@@ -9,7 +9,7 @@ var Home = React.createClass({
     render: function() {
         return (
             <div className="jumbotron">
-                <h1>The First React Components.</h1>
+                <h1>The React Components, by Cory House.</h1>
                 <p>This is a test done to have the React component in the main page</p>
                 <Link to="about" className="btn btn-primary btn-lg">Learn more...</Link>
             </div>
