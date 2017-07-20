@@ -28,19 +28,7 @@ var Link = Router.Link;
     },
 
     render: function() {
-        // var createCourseRow = function(course) {
-        //     return (
-        //         <tr key={course.id}>
-        //             <td> <a href={"/#courses/" + course.id}>{course.id}</a></td>
-        //             <td> { course.title } </td>
-        //             <td> { course.watchHref } </td>
-        //             <td> { course.author.name } </td>
-        //             <td> { course.length } </td>
-        //             <td> { course.category } </td>
-        //         </tr>
-        //     );
-        // };
-
+   
         return (
             <div>
                 <h1>Courses</h1>

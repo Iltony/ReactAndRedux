@@ -19,8 +19,7 @@ var CourseForm = React.createClass({
         return (
                 <form>
                     <h1>Manage Course</h1>
-
-                    {/*id: "", title: "", watchHref: "", author: { id: "", name: "" }, length: "", category: "" */}
+                    
                     <Input 
                         name="title"
                         label="Title"
@@ -43,8 +42,6 @@ var CourseForm = React.createClass({
                         onElementChange={this.props.onChangeAuthor}
                         error= {this.props.errors.author} /> 
                     
-                    {/*<option value={this.props.author.id} onChange={this.props.onChange} error= {this.props.errors.author}>{this.props.author.name} </option>*/}
-
                     <Input 
                         name="length"
                         label="Length"

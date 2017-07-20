@@ -6,7 +6,7 @@ var CourseForm = require('./courseForm');
 var CourseActions = require('../../actions/courseActions');
 var CourseStore = require('../../stores/courseStore');
 var AuthorStore = require('../../stores/authorStore');
-
+var _ = require('lodash');
 var toastr = require('toastr');
 
 var ManageCourses = React.createClass({
@@ -51,12 +51,15 @@ var ManageCourses = React.createClass({
     },
     
     setAuthorToCourse: function (event) {
-
         this.setState({ dirty: true });
-        var authorId = event.target.value;
 
-        this.state.course.author = AuthorStore.getAuthorById(authorId);
-        
+        var author = AuthorStore.getAuthorById(event.target.value);
+
+        this.state.course.author = {
+            id: author.id,
+            name: author.firstName + ' ' + author.lastName
+        };
+
         return this.setState({ course: this.state.course });
     },
 
